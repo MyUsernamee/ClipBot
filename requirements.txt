@@ -1,0 +1,7 @@
+clip==1.0
+discord.py==1.7.3
+emoji==1.6.1
+gptj==3.0.7
+Pillow==9.0.0
+python-dotenv==0.19.2
+torch==1.10.1
