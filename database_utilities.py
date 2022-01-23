@@ -67,7 +67,8 @@ def get_emoji_objects(bot):
     emoji_objects = []
 
     for emoji in emojis:
-        emoji_objects.append(as_emoji(bot, emoji))
+        if as_emoji(bot, emoji):
+            emoji_objects.append(as_emoji(bot, emoji))
 
     return emoji_objects
 
