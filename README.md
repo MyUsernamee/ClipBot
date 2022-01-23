@@ -1,10 +1,10 @@
-#CLIPBot
+# CLIPBot
 
 Simple python discord bot that puts reactions on images based on the servers emoji names.
 
 ****
 
-##Installation
+## Installation
 
 1. Clone the git repo
 2. pip install -r requirements.txt
@@ -14,7 +14,7 @@ Simple python discord bot that puts reactions on images based on the servers emo
 
 ***
 
-##Usage
+## Usage
 
 Any image posted on the server will be scanned and the corresponding reactions will be added!
 
