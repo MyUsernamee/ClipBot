@@ -96,7 +96,7 @@ def index_emoji(emoji, embed=True):
         if embed:
             embedding = embed_emoji(emoji)  # We embed the emoji
 
-        cursor.execute("INSERT INTO emojis (name, id) VALUES (?, ?, ?)", (emoji.name, emoji.id, embed))
+        cursor.execute("INSERT INTO emojis (name, id, embedded) VALUES (?, ?, ?)", (emoji.name, emoji.id, embed))
         conn.commit()
 
 
