@@ -57,7 +57,7 @@ def add_commands(bot):
 
         # We then react with the best emojis based on how many the server settings wants
         best_emojis = torch.topk(probabilities, k=(min(guild_settings['emojisPerMessage'], len(emojis))))
-        for emoji in best_emojis.indices:
+        for emoji in best_emojis.indices[0]:
 
             await message.add_reaction(emojis[emoji])
 
