@@ -26,6 +26,7 @@ def add_commands(bot):
 
         key = args[0]
         values = args[1:]
+        values = list(values)
 
         index_guild(ctx.guild.id) # Make sure the guild is indexed
 
