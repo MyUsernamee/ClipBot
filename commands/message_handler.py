@@ -31,7 +31,7 @@ def add_commands(bot):
         # We then check if every emoji in this server is indexed, if not we add it
         for emoji in message.guild.emojis:
 
-            index_emoji(emoji)
+            await index_emoji(emoji)
 
         emojis = []
 
