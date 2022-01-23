@@ -1,3 +1,4 @@
+import copy
 import json
 import sqlite3
 import os
@@ -35,9 +36,13 @@ def get_guild(guild_id):
 def get_guild_settings(guild_id):
 
     guild_settings = get_guild(guild_id)
-    guild_settings = json.loads(guild_settings[1])
+    if guild_settings:
+        return json.loads(guild_settings[1])
 
-    return guild_settings
+    else:
+
+        index_guild(guild_id)
+        return copy.copy(default_settings)
 
 def index_guild(guild_id):
 
@@ -57,20 +62,30 @@ def get_emojis():
     return result
 
 
+def get_emoji_objects(bot):
+    emojis = get_emojis()
+    emoji_objects = []
+
+    for emoji in emojis:
+        emoji_objects.append(as_emoji(bot, emoji))
+
+    return emoji_objects
+
+
 def get_emoji_by_name(emoji_name):
-    cursor.execute("SELECT * FROM emojis WHERE emoji_name = ?", (emoji_name,))
+    cursor.execute("SELECT * FROM emojis WHERE name = ?", (emoji_name,))
     result = cursor.fetchone()
     return result
 
 
 def get_emoji_by_id(emoji_id):
-    cursor.execute("SELECT * FROM emojis WHERE emoji_id = ?", (emoji_id,))
+    cursor.execute("SELECT * FROM emojis WHERE id = ?", (emoji_id,))
     result = cursor.fetchone()
     return result
 
 
 def get_emoji(emoji_name_or_id):
-    cursor.execute("SELECT * FROM emojis WHERE emoji_name = ? OR emoji_id = ?", (emoji_name_or_id, emoji_name_or_id))
+    cursor.execute("SELECT * FROM emojis WHERE name = ? OR id = ?", (emoji_name_or_id, emoji_name_or_id))
     result = cursor.fetchone()
     return result
 
@@ -81,7 +96,7 @@ def index_emoji(emoji, embed=True):
         if embed:
             embedding = embed_emoji(emoji)  # We embed the emoji
 
-        cursor.execute("INSERT INTO emojis (emoji_name, emoji_id) VALUES (?, ?, ?)", (emoji.name, emoji.id, embed))
+        cursor.execute("INSERT INTO emojis (name, id) VALUES (?, ?, ?)", (emoji.name, emoji.id, embed))
         conn.commit()
 
 
@@ -92,30 +107,30 @@ def as_emoji(bot, emoji_tuple):
     return emoji
 
 
-def embed_emoji(emoji, force=False):
+async def embed_emoji(emoji, force=False, device="cpu"):
     embedding = None
 
-    if not force or get_emoji(emoji.name)[2] == 0:
+    if force or get_emoji(emoji.name)[2] == 0:
         # First we save the emoji's image
         image_name = emoji.name + '.png'
         image_path = os.path.join(os.path.dirname(__file__), 'images', image_name)
-        emoji.save(image_path)
+        await emoji.url.save(image_path)
 
         # We then embed the emoji's image
-        embedding = image_utilities.embed_image(Image.open(image_path))
-        numpy.save(embedding.numpy(), image_path[:-4] + '.npy')
+        embedding = image_utilities.embed_image(Image.open(image_path), device=device)
+        numpy.save(image_path[:-4] + '.npy', embedding.detach().numpy())
 
         # We then delete the image
         os.remove(image_path)
 
         # We then update the database
-        cursor.execute("UPDATE emojis SET embedding = ? WHERE emoji_name = ?", (True, emoji.name))
+        cursor.execute("UPDATE emojis SET embedded = ? WHERE name = ?", (True, emoji.name))
 
         conn.commit()
 
     else:
 
-        embedding = torch.tensor(numpy.load(os.path.join(os.path.dirname(__file__), 'images', emoji.name + '.npy')))
+        embedding = torch.tensor(numpy.load(os.path.join(os.path.dirname(__file__), 'images', emoji.name + '.npy'))).to(device)
 
     # We then return the embedding
     return embedding

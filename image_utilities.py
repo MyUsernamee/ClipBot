@@ -1,10 +1,10 @@
 import torch
 import clip
 
-model, preprocess = clip.load("ViT-B/32")  # Only run once
+model, preprocess = clip.load("ViT-B/32", device="cpu")  # Only run once
 
 
-def compare_images(images1, images2, device="cuda"):
+def compare_images(images1, images2, device="cpu", encode_images1=True, encode_images2=True):
     # Convert images to tensors if they are not already
     if not isinstance(images1, torch.Tensor):
         images1 = [preprocess(image).unsqueeze(0).to(device) for image in images1]
@@ -14,8 +14,8 @@ def compare_images(images1, images2, device="cuda"):
         images2 = torch.cat(images2, dim=0)
 
     # Encode the images
-    images1 = model.encode_iamge(images1)
-    images2 = model.encode_iamge(images2)
+    images1 = model.encode_image(images1) if encode_images1 else images1
+    images2 = model.encode_image(images2) if encode_images2 else images2
 
     # Normalize the images
     images1 = images1 / images1.norm(dim=1, keepdim=True)
@@ -31,12 +31,12 @@ def compare_images(images1, images2, device="cuda"):
     return probs_per_image
 
 
-def embed_image(image, device="cuda"):
+def embed_image(image, device="cpu"):
     # Convert image to tensor if it is not already
     if not isinstance(image, torch.Tensor):
         image = preprocess(image).unsqueeze(0).to(device)
 
     # Encode the image
-    image = model.encode_iamge(image)
+    image = model.encode_image(image)
 
     return image
