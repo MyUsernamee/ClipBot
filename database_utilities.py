@@ -47,7 +47,7 @@ def get_guild_settings(guild_id):
 def index_guild(guild_id):
 
     if not get_guild(guild_id): # If the guild is not in the database yet then we add it with the default settings
-        cursor.execute("INSERT INTO guilds (guild_id) VALUES (?, ?)", (guild_id, json.dumps(default_settings)))
+        cursor.execute("INSERT INTO guilds (guild_id, settings) VALUES (?, ?)", (guild_id, json.dumps(default_settings)))
         conn.commit()
 
 
