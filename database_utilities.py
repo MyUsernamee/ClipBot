@@ -110,7 +110,7 @@ def as_emoji(bot, emoji_tuple):
 async def embed_emoji(emoji, force=False, device="cpu"):
     embedding = None
 
-    if force or get_emoji(emoji.name)[2] == 0:
+    if force or not get_emoji(emoji.name) or get_emoji(emoji.name)[2] == 0:
         # First we save the emoji's image
         image_name = emoji.name + '.png'
         image_path = os.path.join(os.path.dirname(__file__), 'images', image_name)
