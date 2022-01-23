@@ -4,7 +4,7 @@ import clip
 model, preprocess = clip.load("ViT-B/32", device="cpu")  # Only run once
 
 
-def compare_images(images1, images2, device="cpu", encode_images1=True, encode_images2=True):
+def compare_images(images1, images2, device="cpu", encode_images1=True, encode_images2=True, return_distances=False):
     # Convert images to tensors if they are not already
     if not isinstance(images1, torch.Tensor):
         images1 = [preprocess(image).unsqueeze(0).to(device) for image in images1]
@@ -26,7 +26,7 @@ def compare_images(images1, images2, device="cpu", encode_images1=True, encode_i
     logits_per_image = logit_scale * images1 @ images2.t()
 
     # cosine similarity as probabilities
-    probs_per_image = torch.softmax(logits_per_image, dim=-1)
+    probs_per_image = torch.softmax(logits_per_image, dim=-1) if not return_distances else logits_per_image
 
     return probs_per_image
 
