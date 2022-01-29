@@ -23,7 +23,7 @@ c = conn.cursor()
 c.execute('''CREATE TABLE guilds (
     guild_id INTEGER PRIMARY KEY,
     settings TEXT
-    peermissions TEXT DEFAULT '[]'
+    permissions TEXT DEFAULT '[]'
     )''')
 conn.commit()
 
