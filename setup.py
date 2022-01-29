@@ -36,7 +36,7 @@ conn.commit()
 
 c.execute('''CREATE TABLE admins (
     id INTEGER PRIMARY KEY,
-    name TEXT
+    name TEXT,
     level INTEGER DEFAULT 0
     )''')
 conn.commit()
