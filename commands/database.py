@@ -1,7 +1,8 @@
 import discord
 
 from discord_utilities import send_fancy_message
-from database_utilities import get_guild_settings, index_guild, update_guild_settings
+from database_utilities import get_guild_settings, index_guild, update_guild_settings, get_guild_permissions, \
+    get_admin_level, update_guild_permissions
 from statics import default_settings, type_values
 
 
@@ -58,3 +59,48 @@ def add_commands(bot):
         guild_settings[key] = values[0]
         update_guild_settings(ctx.guild.id, guild_settings)
         await send_fancy_message(ctx, "Set " + key + " to " + str(values[0]), title="Success")
+
+    @bot.command(name="add_permission", aliases=["add_perm"], usage="<permission>",
+                 description="Adds a permission to the current guild.")
+    async def add_permission(ctx, *args):
+
+        if len(args) == 0:
+            await send_fancy_message(ctx, "Please specify a permission to add.", title="Error")
+            return
+
+        # Check if the user that sent the message is allowed to use this command
+        user_permission = get_admin_level(ctx.author.id)
+
+        if user_permission is None or user_permission < 9:
+            await send_fancy_message(ctx, "You do not have permission to use this command.", title="Error")
+            return
+
+        permission = args[0]
+
+        update_guild_permissions(ctx.guild.id, get_guild_permissions(ctx.guild.id) + [permission])
+
+        await send_fancy_message(ctx, "Added " + permission + " to the list of permissions.", title="Success")
+
+    @bot.command("check_user_permissions", aliases=["check_user_perm", "cp"], usage="<user>",
+                 decription="Checks the permissions of a user.")
+    async def check_user_permissions(ctx, *args):
+
+        user = None
+
+        if len(args) == 0:
+            user = ctx.author
+        else:
+            user = ctx.guild.get_member_named(args[0])
+
+        if not user:
+            await send_fancy_message(ctx, "That user does not exist.", title="Error")
+            return
+
+        permissions = get_admin_level(user.id)
+
+        if permissions is None:
+            permissions = 0
+
+        await send_fancy_message(ctx, "User " + user.name + " has a admin level of " + str(permissions), title="Success")
+
+
