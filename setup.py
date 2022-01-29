@@ -39,4 +39,5 @@ c.execute('''CREATE TABLE admins (
     name TEXT
     level INTEGER DEFAULT 0
     )''')
+conn.commit()
 
