@@ -23,6 +23,7 @@ c = conn.cursor()
 c.execute('''CREATE TABLE guilds (
     guild_id INTEGER PRIMARY KEY,
     settings TEXT
+    peermissions TEXT DEFAULT '[]'
     )''')
 conn.commit()
 
@@ -33,4 +34,9 @@ c.execute('''CREATE TABLE emojis (
     )''')
 conn.commit()
 
+c.execute('''CREATE TABLE admins (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+    level INTEGER DEFAULT 0
+    )''')
 

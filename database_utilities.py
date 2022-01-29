@@ -44,17 +44,51 @@ def get_guild_settings(guild_id):
         index_guild(guild_id)
         return copy.copy(default_settings)
 
+def get_guild_permissions(guild_id):
+    cursor.execute("SELECT * FROM guilds WHERE guild_id = ?", (guild_id,))
+    result = cursor.fetchone()
+    return json.loads(result[2])
+
 def index_guild(guild_id):
 
     if not get_guild(guild_id): # If the guild is not in the database yet then we add it with the default settings
-        cursor.execute("INSERT INTO guilds (guild_id, settings) VALUES (?, ?)", (guild_id, json.dumps(default_settings)))
+        cursor.execute("INSERT INTO guilds (guild_id, settings, permissions) VALUES (?, ?, ?)", (guild_id, json.dumps(default_settings), "[]"))
         conn.commit()
 
+def add_admin(user_id, name, level):
+    cursor.execute("INSERT INTO admins (id, name, level) VALUES (?, ?, ?)", (user_id, name, level))
+    conn.commit()
+
+def get_admin(user_id):
+    cursor.execute("SELECT * FROM admins WHERE id = ?", (user_id,))
+    result = cursor.fetchone()
+    return result
+
+def set_admin_level(user_id, level):
+    cursor.execute("UPDATE admins SET level = ? WHERE id = ?", (level, user_id))
+    conn.commit()
+
+def get_admin_level(user_id):
+    cursor.execute("SELECT level FROM admins WHERE id = ?", (user_id,))
+    result = cursor.fetchone()
+    if result:
+        return result[0]
+    return 0
 
 def update_guild_settings(guild_id, settings):
     cursor.execute("UPDATE guilds SET settings = ? WHERE guild_id = ?", (json.dumps(settings), guild_id))
     conn.commit()
 
+def update_guild_permissions(guild_id, permissions):
+    cursor.execute("UPDATE guilds SET permissions = ? WHERE guild_id = ?", (json.dumps(permissions), guild_id))
+    conn.commit()
+
+def check_guild_permission(guild_id, permission):
+    permissions = json.loads(get_guild_permissions(guild_id))
+    if permission in permissions:
+        return True
+    else:
+        return False
 
 def get_emojis():
     cursor.execute("SELECT * FROM emojis")
