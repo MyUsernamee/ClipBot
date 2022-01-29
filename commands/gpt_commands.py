@@ -72,7 +72,7 @@ def add_commands(bot):
 
         try:
 
-            completion = openai.Completion.create(
+            completion = final_text + openai.Completion.create(
                 prompt=final_text,
                 max_tokens=64,
                 temperature=temperature,
