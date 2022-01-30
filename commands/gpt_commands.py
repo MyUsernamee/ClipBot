@@ -1,3 +1,5 @@
+import time
+from math import floor
 
 from gpt_j.Basic_api import simple_completion
 
@@ -6,6 +8,26 @@ from discord_utilities import send_fancy_message
 import openai
 
 def add_commands(bot):
+
+    cooldowns = {}
+    cooldown = 8
+
+    def check_content(content):
+
+        response = openai.Completion.create(
+            engine="content-filter-alpha",
+            prompt="<|endoftext|>" + content + "\n--\nLabel:",
+            temperature=0,
+            max_tokens=1,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
+            logprobs=10
+        )
+
+        output = int(response.choices[0].text)
+
+        return True if output < 2 else response.choices[0].logprobs[0] > -0.355
 
     @bot.command(name='continue', help='Trys to continue the text using gpt-j', aliases=['c'], usage='<text> [t=<temperature>] [p=top_p]')
     async def completion(ctx, *text):
@@ -54,6 +76,17 @@ def add_commands(bot):
             await ctx.channel.send('Please provide some text to continue.')
             return
 
+        if ctx.guild.id in cooldowns:
+            if time.time() - cooldowns[ctx.guild.id] < cooldown:
+                await send_fancy_message(ctx, "Please wait " + str(floor(cooldown - (time.time() - cooldowns[ctx.guild.id]))) + " seconds before using this command again.", color=0xaa8888)
+                return
+            else:
+                cooldowns[ctx.guild.id] = time.time()
+
+        else:
+
+            cooldowns[ctx.guild.id] = time.time()
+
         final_text = ""
         temperature = 0.5
         top_p = 0.9
@@ -71,6 +104,11 @@ def add_commands(bot):
                 final_text = final_text + word + " "
 
         final_text = final_text.strip()
+
+        if not check_content(final_text):
+            await send_fancy_message(ctx, "Please provide some text that is not controversial, or offensive.",
+                                     color=0xaa8888)
+            return
 
         completion = ""
 
