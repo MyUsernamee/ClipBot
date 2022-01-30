@@ -169,3 +169,48 @@ async def embed_emoji(emoji, force=False, device="cpu"):
 
     # We then return the embedding
     return embedding
+
+# Check to see if our database contains all of the tables and cloumns that we need, if not, we create them
+def check_database():
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='admins'")
+    result = cursor.fetchone()
+    if not result:
+        cursor.execute("CREATE TABLE admins (id INTEGER PRIMARY KEY, name TEXT, level INTEGER)")
+        conn.commit()
+
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='guilds'")
+    result = cursor.fetchone()
+    if not result:
+        cursor.execute("CREATE TABLE guilds (guild_id INTEGER PRIMARY KEY, settings TEXT, permissions TEXT default '[]')")
+        conn.commit()
+
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='emojis'")
+    result = cursor.fetchone()
+    if not result:
+        cursor.execute("CREATE TABLE emojis (name TEXT, id INTEGER, embedded BOOLEAN)")
+        conn.commit()
+
+    # Check to make sure our tables contain all of the columns that we need
+    cursor.execute("PRAGMA table_info(admins)")
+    result = cursor.fetchall()
+    if not result:
+        cursor.execute("ALTER TABLE admins ADD COLUMN id INTEGER PRIMARY KEY")
+        cursor.execute("ALTER TABLE admins ADD COLUMN name TEXT")
+        cursor.execute("ALTER TABLE admins ADD COLUMN level INTEGER")
+        conn.commit()
+
+    cursor.execute("PRAGMA table_info(guilds)")
+    result = cursor.fetchall()
+    if not result:
+        cursor.execute("ALTER TABLE guilds ADD COLUMN guild_id INTEGER PRIMARY KEY")
+        cursor.execute("ALTER TABLE guilds ADD COLUMN settings TEXT")
+        cursor.execute("ALTER TABLE guilds ADD COLUMN permissions TEXT default '[]'")
+        conn.commit()
+
+    cursor.execute("PRAGMA table_info(emojis)")
+    result = cursor.fetchall()
+    if not result:
+        cursor.execute("ALTER TABLE emojis ADD COLUMN name TEXT")
+        cursor.execute("ALTER TABLE emojis ADD COLUMN id INTEGER")
+        cursor.execute("ALTER TABLE emojis ADD COLUMN embedded BOOLEAN")
+        conn.commit()

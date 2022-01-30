@@ -40,10 +40,11 @@ def add_commands(bot):
 
         await send_fancy_message(ctx, completion) # Temp and top_p are flipped
 
-    @bot.command(name='davincicontinue', help='Trys to continue the text using the davinci engine', aliases=['dc'], usage='<text> [t=<temperature>] [p=top_p]')
+    @bot.command(name='davincicontinue', help='Trys to continue the text using the davinci engine', aliases=['dc'],
+                 usage='<text> [t=<temperature>] [p=<top_p>] [engine=<engine>]')
     async def davinci_completion(ctx, *text):
 
-        #Check permissions to see if this guild can use this command
+        # Check permissions to see if this guild can use this command
         permissions = get_guild_permissions(ctx.guild.id)
         if "davinci_completion" not in permissions:
             await send_fancy_message(ctx, "You do not have permission to use this command.", color=0xaa8888)
@@ -56,6 +57,7 @@ def add_commands(bot):
         final_text = ""
         temperature = 0.5
         top_p = 0.9
+        engine = "davinci"
 
         for word in text:
 
@@ -63,6 +65,8 @@ def add_commands(bot):
                 temperature = float(word[2:])
             elif word.startswith('p='):
                 top_p = float(word[2:])
+            elif word.startswith('engine='):
+                engine = word[7:]
             else:
                 final_text = final_text + word + " "
 
@@ -77,7 +81,7 @@ def add_commands(bot):
                 max_tokens=64,
                 temperature=temperature,
                 top_p=top_p,
-                engine='davinci',
+                engine=engine,
             ).choices[0].text
 
         except Exception as e:
