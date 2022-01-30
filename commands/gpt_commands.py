@@ -27,7 +27,7 @@ def add_commands(bot):
 
         output = int(response.choices[0].text)
 
-        return True if output < 2 else response.choices[0].logprobs[0] > -0.355
+        return output < 2
 
     @bot.command(name='continue', help='Trys to continue the text using gpt-j', aliases=['c'], usage='<text> [t=<temperature>] [p=top_p]')
     async def completion(ctx, *text):
