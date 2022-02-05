@@ -156,7 +156,7 @@ async def embed_emoji(emoji, force=False, device="cpu"):
         numpy.save(image_path[:-4] + '.npy', embedding.detach().numpy())
 
         # We then delete the image
-        #os.remove(image_path)
+        os.remove(image_path)
 
         # We then update the database
         cursor.execute("UPDATE emojis SET embedded = ? WHERE name = ?", (True, emoji.name))

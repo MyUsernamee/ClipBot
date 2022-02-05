@@ -53,10 +53,7 @@ def add_commands(bot):
         probabilities = compare_images([Image.open(filename)], embedded_emojis, encode_images2=False)
 
         # We then remove the image
-        #os.remove("images/temp.png")
-
-        print(probabilities)
-        print([emoji.name for emoji in emojis])
+        os.remove("images/temp.png")
 
         # We then react with the best emojis based on how many the server settings wants
         best_emojis = torch.topk(probabilities, k=(min(guild_settings['emojisPerMessage'], len(emojis))))
