@@ -18,8 +18,8 @@ def compare_images(images1, images2, device="cpu", encode_images1=True, encode_i
     images2 = model.encode_image(images2) if encode_images2 else images2
 
     # Normalize the images
-    images1 = images1 / images1.norm(dim=0, keepdim=True)
-    images2 = images2 / images2.norm(dim=0, keepdim=True)
+    images1 = images1 / images1.norm(dim=-1, keepdim=True)
+    images2 = images2 / images2.norm(dim=-1, keepdim=True)
 
     # cosine similarity as logits
     logit_scale = model.logit_scale.exp()
