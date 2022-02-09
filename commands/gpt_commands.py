@@ -27,7 +27,7 @@ def add_commands(bot):
 
         output = int(response.choices[0].text)
 
-        return output < 2
+        return output < 1
 
     @bot.command(name='continue', help='Trys to continue the text using gpt-j', aliases=['c'], usage='<text> [t=<temperature>] [p=top_p]')
     async def completion(ctx, *text):
