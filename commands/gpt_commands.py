@@ -90,7 +90,7 @@ def add_commands(bot):
         final_text = ""
         temperature = 0.5
         top_p = 0.9
-        engine = "davinci"
+        engine = "text-davinci-001"
 
         for word in text:
 
